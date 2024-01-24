@@ -6,9 +6,10 @@ import {
 interface DialogActionsProps extends MUIDialogActionsProps {
   onCancel: () => void
   onConfirm?: () => void
+  disabled?: boolean
 }
 
-export function DialogActions({ onCancel, onConfirm, ...props }: DialogActionsProps) {
+export function DialogActions({ onCancel, onConfirm, disabled, ...props }: DialogActionsProps) {
   return (
     <MUIDialogActions {...props} sx={{ m: 2 }}>
       <Button
@@ -23,6 +24,7 @@ export function DialogActions({ onCancel, onConfirm, ...props }: DialogActionsPr
         variant="contained"
         color="success"
         onClick={onConfirm}
+        disabled={disabled}
       >
         Confirmar
       </Button>

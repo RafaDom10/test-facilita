@@ -24,10 +24,10 @@ export function EditActionButton({ row }: EditActionButtonProps) {
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
     trigger,
-    getValues
+    getValues,
   } = useForm<FormData>({
     resolver: zodResolver(schema)
   })
@@ -106,6 +106,7 @@ export function EditActionButton({ row }: EditActionButtonProps) {
         <Dialog.Actions
           onCancel={handleCloseDialog}
           onConfirm={onSubmit}
+          disabled={!isDirty}
         />
       </Dialog>
     </>
