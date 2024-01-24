@@ -27,6 +27,11 @@ export function Table() {
       header: 'Telefone',
       size: 150,
     },
+    {
+      accessorKey: 'coordinates',
+      header: 'Cordenadas',
+      size: 150,
+    },
   ]
 
   const data = [
@@ -34,21 +39,24 @@ export function Table() {
       id: 1,
       name: 'Client 1',
       email: 'r@mail.test.com',
-      phone: '(11) 23442-23442'
+      phone: '(11) 23442-23442',
+      coordinates: '0.0'
 
     },
     {
       id: 2,
       name: 'Client 2',
       email: 'r@mail.test.com',
-      phone: '(11) 23442-23442'
+      phone: '(11) 23442-23442',
+      coordinates: '0.0'
 
     },
     {
       id: 3,
       name: 'Client 3',
       email: 'r@mail.test.com',
-      phone: '(11) 23442-23442'
+      phone: '(11) 23442-23442',
+      coordinates: '0.0'
     }
   ]
 

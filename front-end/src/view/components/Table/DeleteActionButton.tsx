@@ -11,6 +11,7 @@ interface DeleteActionButtonProps {
     name: string;
     email: string;
     phone: string;
+    coordinates: string;
   }>
 }
 

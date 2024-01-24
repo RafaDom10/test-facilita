@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
-import { useState } from 'react'
 import { useOpenNewClientDialog } from './useOpenNewClientDialog'
 import { useBetween } from 'use-between'
 
@@ -15,7 +14,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export function useFormController () {
+export function useCreateFormController () {
   const {
     register,
     handleSubmit: hookFormHandleSubmit,
@@ -27,19 +26,18 @@ export function useFormController () {
 
   const { setOpen } = useBetween(useOpenNewClientDialog)
 
-  const [ isPending, setIsPending ] = useState<boolean>( false )
-
   const handleSubmit = hookFormHandleSubmit(async (data) => {
      try {
-      setIsPending( true )
       console.log( data )
-      setIsPending( false )
       setOpen( false )
+      toast.success('Cliente criado com sucesso!')
 
      } catch {
       toast.error('Ocorreu um erro ao criar o cliente!')
      }
+
+     reset()
   })
 
-  return { handleSubmit, register, errors, isPending, reset }
+  return { handleSubmit, register, errors, reset }
 }

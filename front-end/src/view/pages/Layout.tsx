@@ -1,12 +1,10 @@
 import { Card, CardContent, Paper, Typography } from '@mui/material';
-import { Toaster } from "react-hot-toast";
-import { HeaderButtons } from './components/HeaderButtons';
-import { Table } from './components/Table';
+import { HeaderButtons } from '../components/HeaderButtons';
+import { Table } from '../components/Table';
 
 export function Layout() {
   return (
     <>
-
       <Card sx={{ m: 4 }} component={Paper} elevation={8}>
         <CardContent sx={{
           display: 'flex',
@@ -24,8 +22,6 @@ export function Layout() {
           <Table />
         </CardContent>
       </Card>
-
-      <Toaster />
     </>
   )
 }
