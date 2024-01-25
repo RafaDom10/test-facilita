@@ -35,6 +35,17 @@ yarn install # ou npm install
 ## Configuração do Banco de Dados
 Execute o arquivo DDL (Data Definition Language) fornecido para criar o banco de dados necessário.
 
+## Rodando o projeto
+Execute o seguintes comandos tanto para executar o front-end quanto o back-end
+
+```bash
+cd front-end
+yarn dev # ou npm dev
+```
+```bash
+cd backend
+yarn dev # ou npm dev
+```
 
 O front-end estará disponível em http://localhost:5173 e o back-end em http://localhost:3000.
 
