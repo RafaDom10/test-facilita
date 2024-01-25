@@ -1,21 +1,16 @@
 import { IconButton, Typography } from "@mui/material"
 import { Close as DeleteIcon } from '@mui/icons-material';
-import { MRT_Row } from "material-react-table";
 import { useState } from "react";
 import { Dialog } from "../Dialog";
 import toast from "react-hot-toast";
+import { clientsService } from "../../../app/services/clientsService";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ActionButtonProps } from "../../../app/types/actionBtnProps";
+import { Payload } from "../../../app/types/clientPayload";
 
-interface DeleteActionButtonProps {
-  row: MRT_Row<{
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    coordinates: string;
-  }>
-}
+export function DeleteActionButton({ row }: ActionButtonProps) {
+  const queryClient = useQueryClient()
 
-export function DeleteActionButton({ row }: DeleteActionButtonProps) {
   const { original: rowData } = row
   const [open, setOpen] = useState<boolean>(false)
 
@@ -27,9 +22,30 @@ export function DeleteActionButton({ row }: DeleteActionButtonProps) {
     setOpen(false)
   }
 
-  const onDelete = () => {
-    handleCloseDialog()
-    toast.success('Cliente Deletado com sucesso!')
+  const onDelete = async (id: string) => {
+    await clientsService.remove(id)
+  }
+
+  const { mutateAsync: removeClientFn } = useMutation({
+    mutationFn: onDelete,
+    onSuccess() {
+      queryClient.setQueryData(['clients'], (data: Payload[]) => {
+        const filteredData = data.filter( d => d.id !== rowData.id )
+        return [ ...filteredData ]
+      })
+    }
+  })
+
+  async function handleRemoveClient() {
+    try {
+      await removeClientFn( rowData.id )
+
+      handleCloseDialog()
+
+      toast.success('Cliente deletado com sucesso!')
+    } catch {
+      toast.error('Ocorreu um erro ao deletar o cliente!')
+    }
   }
 
   return (
@@ -52,7 +68,7 @@ export function DeleteActionButton({ row }: DeleteActionButtonProps) {
           </Typography>
         </Dialog.Content>
 
-        <Dialog.Actions onCancel={handleCloseDialog} onConfirm={onDelete} />
+        <Dialog.Actions onCancel={handleCloseDialog} onConfirm={handleRemoveClient} />
 
       </Dialog>
 

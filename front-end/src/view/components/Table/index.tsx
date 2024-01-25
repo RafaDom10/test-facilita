@@ -3,15 +3,21 @@ import { MaterialReactTable } from 'material-react-table';
 import { MRT_Localization_PT_BR } from 'material-react-table/locales/pt-BR';
 import { DeleteActionButton } from './DeleteActionButton';
 import { EditActionButton } from './EditActionButton';
+import { clientsService } from '../../../app/services/clientsService';
+import { useQuery } from '@tanstack/react-query';
 
 export function Table() {
+  const getClients = async () => {
+    const clients = await clientsService.list()
+    return clients
+  }
+
+  const { data } = useQuery({
+    queryKey: ['clients'],
+    queryFn: getClients
+  })
 
   const columns = [
-    {
-      accessorKey: 'id',
-      header: 'Id',
-      size: 150,
-    },
     {
       accessorKey: 'name',
       header: 'Cliente',
@@ -34,37 +40,11 @@ export function Table() {
     },
   ]
 
-  const data = [
-    {
-      id: 1,
-      name: 'Client 1',
-      email: 'r@mail.test.com',
-      phone: '(11) 23442-23442',
-      coordinates: '0.0'
-
-    },
-    {
-      id: 2,
-      name: 'Client 2',
-      email: 'r@mail.test.com',
-      phone: '(11) 23442-23442',
-      coordinates: '0.0'
-
-    },
-    {
-      id: 3,
-      name: 'Client 3',
-      email: 'r@mail.test.com',
-      phone: '(11) 23442-23442',
-      coordinates: '0.0'
-    }
-  ]
-
   return (
     <MaterialReactTable
       localization={MRT_Localization_PT_BR}
       columns={columns}
-      data={data}
+      data={data ?? []}
       enableRowActions
       renderRowActions={({ row }) => (
         <Box sx={{ display: 'flex', flexWrap: 'nowrap', gap: '8px' }}>

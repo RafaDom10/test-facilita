@@ -3,6 +3,7 @@ import { Theme } from './themes/default';
 import { Toaster } from 'react-hot-toast';
 
 export function App() {
+
   return (
     <Theme>
       <Layout />

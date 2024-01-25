@@ -1,24 +1,20 @@
-import { useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconButton, TextField } from "@mui/material";
 import { Edit as EditIcon } from '@mui/icons-material';
-import { MRT_Row } from "material-react-table";
 import { FormData, schema } from "../../../app/types/schema";
 import { Dialog } from "../Dialog";
 import toast from "react-hot-toast";
+import { clientsService } from '../../../app/services/clientsService/index';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ActionButtonProps } from "../../../app/types/actionBtnProps";
+import { Payload } from "../../../app/types/clientPayload";
+import { formatPhone } from "../../../app/utils/formatPhone";
 
-interface EditActionButtonProps {
-  row: MRT_Row<{
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    coordinates: string;
-  }>
-}
+export function EditActionButton({ row }: ActionButtonProps) {
+  const queryClient = useQueryClient()
 
-export function EditActionButton({ row }: EditActionButtonProps) {
   const { original: rowData } = row
   const [open, setOpen] = useState<boolean>(false)
 
@@ -42,26 +38,52 @@ export function EditActionButton({ row }: EditActionButtonProps) {
     setOpen(true)
   }
 
+  const handleKeyUpPhoneField = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      formatPhone(event)
+    }, [])
+
   const handleCloseDialog = () => {
     setOpen(false)
   }
 
-  const onSubmit = async () => {
+  const onUpdate = async (payload: Payload) => {
+    await clientsService.update(payload)
+  }
+
+  const { mutateAsync: updateClientFn } = useMutation({
+    mutationFn: onUpdate,
+    onSuccess(_, variables) {
+      queryClient.setQueryData(['clients'], (data: Payload[]) => {
+
+        const filteredData = data.filter(d => d.id !== rowData.id)
+
+        return [...filteredData, {
+          name: variables.name,
+          email: variables.email,
+          phone: variables.phone,
+          coordinates: variables.coordinates
+        }]
+      })
+    }
+  })
+
+  async function handleUpdateClient() {
     try {
       const triggerResult = await trigger()
 
-      if ( !triggerResult ) {
+      if (!triggerResult) {
         return
       }
 
       const payload = getValues()
-      console.log("🚀 ~ onSubmit ~ payload:", payload)
+      await updateClientFn({ ...payload, id: rowData.id })
 
+      reset()
       setOpen(false)
-      toast.success('Cliente atualizado com sucesso!')
-
+      toast.success('Cliente criado com sucesso!')
     } catch {
-      toast.error('Ocorreu um erro ao atualizar o cliente!')
+      toast.error('Ocorreu um erro ao criar o cliente!')
     }
   }
 
@@ -96,16 +118,19 @@ export function EditActionButton({ row }: EditActionButtonProps) {
             label="Telefone"
             fullWidth
             {...register('phone')}
+            onChange={(e) => handleKeyUpPhoneField(e)}
           />
           <TextField
             label="Cordenadas"
             fullWidth
+            error={'coordinates' in errors}
+            helperText={'coordinates' in errors && errors.coordinates?.message}
             {...register('coordinates')}
           />
         </Dialog.Content>
         <Dialog.Actions
           onCancel={handleCloseDialog}
-          onConfirm={onSubmit}
+          onConfirm={handleUpdateClient}
           disabled={!isDirty}
         />
       </Dialog>

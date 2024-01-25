@@ -7,9 +7,9 @@ export function HeaderButtons() {
     <Stack
       direction='row'
       spacing={1}
-      justifyContent='flex-end' sx={{
-        mb: 2
-      }}>
+      justifyContent='flex-end'
+      alignContent='center'
+    >
       <RouteButton />
       <NewClientButton />
     </Stack>

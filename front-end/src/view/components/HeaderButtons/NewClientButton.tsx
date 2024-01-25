@@ -7,8 +7,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormData, schema } from "../../../app/types/schema";
 import toast from "react-hot-toast";
+import { clientsService } from "../../../app/services/clientsService";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface Payload {
+  name: string
+  email: string
+  phone: string
+  coordinates: string
+}
 
 export function NewClientButton() {
+  const queryClient = useQueryClient()
   const [open, setOpen] = useState<boolean>(false)
 
   const {
@@ -34,7 +44,25 @@ export function NewClientButton() {
       formatPhone(event)
     }, [])
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: Payload) => {
+    await clientsService.create( data )
+  }
+
+  const { mutateAsync: createClientFn } = useMutation({
+    mutationFn: onSubmit,
+    onSuccess(_, variables) {
+      queryClient.setQueryData(['clients'], (data: Payload[]) => {
+        return [ ...data, {
+          name: variables.name,
+          email: variables.email,
+          phone: variables.phone,
+          coordinates: variables.coordinates
+        }]
+      })
+    }
+  })
+
+  async function handleCreateClient() {
     try {
       const triggerResult = await trigger()
 
@@ -43,7 +71,8 @@ export function NewClientButton() {
       }
 
       const payload = getValues()
-      console.log("🚀 ~ onSubmit ~ payload:", payload)
+
+      await createClientFn( payload )
 
       reset()
       setOpen(false)
@@ -93,12 +122,14 @@ export function NewClientButton() {
             <TextField
               label="Cordenadas"
               fullWidth
+              error={'coordinates' in errors}
+              helperText={'coordinates' in errors && errors.coordinates?.message}
               {...register('coordinates')}
             />
           </Dialog.Content>
           <Dialog.Actions
             onCancel={handleCloseDialog}
-            onConfirm={onSubmit}
+            onConfirm={handleCreateClient}
           />
       </Dialog>
     </>
