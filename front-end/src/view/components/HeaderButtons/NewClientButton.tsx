@@ -32,6 +32,7 @@ export function NewClientButton() {
   })
 
   const handleOpenDialog = () => {
+    reset()
     setOpen(true);
   };
 
