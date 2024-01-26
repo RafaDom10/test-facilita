@@ -42,27 +42,44 @@ export function RouteButton() {
         open={open}
         onClose={handleCloseDialog}
       >
+        {
+          data.length === 0 && (
+            <Stack direction='row' justifyContent={'center'} sx={{ width: "500px", m: 4}}>
+              <Alert severity="info" sx={{ width: '500px', mb: 2, borderRadius: 1 }}>
+                <Typography>
+                  Não há registros a serem exibidos
+                </Typography>
+              </Alert>
+            </Stack>
+          )
+        }
 
-        <Stack direction='row' justifyContent={'center'}>
-          <Alert severity="info" sx={{ width: '400px', mb: 2, borderRadius: 1 }}>
-          <Typography>Clientes ordenados de acordo com a menor rota</Typography>
-          </Alert>
-        </Stack>
+        {
+          data.length > 0 && (
+            <>
+              <Stack direction='row' justifyContent={'center'}>
+                <Alert severity="info" sx={{ width: '400px', mb: 2, borderRadius: 1 }}>
+                  <Typography>Clientes ordenados de acordo com a menor rota</Typography>
+                </Alert>
+              </Stack>
 
-        <List sx={{ pt: 0, maxHeight: '500px', minWidth: '500px' }}>
-          {data.map((client, index) => (
-            <ListItem disableGutters key={index}>
-              <ListItemButton sx={{ cursor: 'default' }}>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: '#C7C7C7', color: '#F2F2F2' }}>
-                    <PersonIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={client.name} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+              <List sx={{ pt: 0, maxHeight: '500px', minWidth: '500px' }}>
+                {data.map((client, index) => (
+                  <ListItem disableGutters key={index}>
+                    <ListItemButton sx={{ cursor: 'default' }}>
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: '#C7C7C7', color: '#F2F2F2' }}>
+                          <PersonIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary={client.name} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )
+        }
       </Dialog>
 
     </>

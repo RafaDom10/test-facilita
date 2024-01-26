@@ -3,7 +3,7 @@ import { type IClientRepository } from './IClientRepository'
 import { client } from '../../database'
 
 export class ClientRepository implements IClientRepository {
-  async findAll (): Promise<any> {
+  async findAll (): Promise<Client[]> {
     const { rows } = await client.query(`
       SELECT clients.*
       FROM clients
@@ -11,7 +11,21 @@ export class ClientRepository implements IClientRepository {
     return rows
   }
 
-  async create ({ name, email, phone, coordinates }: Client): Promise<Client> {
+  async findById (id: string): Promise<Client> {
+    const { rows } = await client.query(`
+      SELECT clients.*
+      FROM clients
+      WHERE clients.id = $1`, [id])
+    return rows[0]
+  }
+
+  async findByEmail (email: string): Promise<Client> {
+    const { rows } = await client.query(`
+      SELECT * FROM clients WHERE email = $1`, [email])
+    return rows[0]
+  }
+
+  async create ({ name, email, phone, coordinates }: Omit<Client, 'id'>): Promise<Client> {
     const { rows } = await client.query(`
       INSERT INTO clients(name, email, phone, coordinates)
       VALUES($1, $2, $3, $4)

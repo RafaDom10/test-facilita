@@ -13,6 +13,10 @@ export class ClientController {
     const usecase = container.resolve(CreateClientUseCase)
     const result = await usecase.execute({ name, email, phone, coordinates })
 
+    if (result.isLeft()) {
+      return response.status(result.value.statusCode).json(result.value.message)
+    }
+
     return response.status(201).json(result)
   }
 
@@ -21,7 +25,11 @@ export class ClientController {
     const { name, email, phone, coordinates } = request.body
 
     const usecase = container.resolve(UpdateClientUseCase)
-    const result = await usecase.execute({ name, email, phone, coordinates }, id)
+    const result = await usecase.execute({ id, name, email, phone, coordinates }, id)
+
+    if (result.isLeft()) {
+      return response.status(result.value.statusCode).json(result.value.message)
+    }
 
     return response.status(201).json(result)
   }
@@ -35,7 +43,12 @@ export class ClientController {
   async delete (request: Request, response: Response): Promise<Response> {
     const { id } = request.params
     const usecase = container.resolve(DeleteClientUseCase)
-    await usecase.execute(String(id))
+    const result = await usecase.execute(String(id))
+
+    if (result.isLeft()) {
+      return response.status(result.value.statusCode).json(result.value.message)
+    }
+
     return response.sendStatus(204)
   }
 
